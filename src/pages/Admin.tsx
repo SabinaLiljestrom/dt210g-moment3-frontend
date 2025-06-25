@@ -3,10 +3,6 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-/**
- * Admin – Bootstrap‑placeholder.
- * Skyddad sida – här ska CRUD‑formulär/lister hamna när auth är kopplad.
- */
 const Admin: React.FC = () => {
   return (
     <Container
