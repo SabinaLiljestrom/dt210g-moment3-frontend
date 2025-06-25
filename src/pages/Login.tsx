@@ -1,22 +1,29 @@
 import React from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-200 p-4">
-      <section className="text-center bg-white/70 backdrop-blur-md rounded-2xl shadow-xl p-10 max-w-md w-full">
-        <h1 className="text-3xl font-bold mb-4">Logga in</h1>
-        <p className="text-gray-700 mb-8">
-          Här kommer inloggningsformuläret att visas.
-        </p>
-        <Link
-          to="/"
-          className="px-6 py-3 rounded-full font-semibold shadow hover:shadow-lg transition bg-indigo-600 text-white"
-        >
-          Till startsidan
-        </Link>
-      </section>
-    </main>
+    <Container
+      fluid
+      className="py-5 bg-light min-vh-100 d-flex align-items-center"
+    >
+      <Row className="w-100 justify-content-center">
+        <Col xs={11} sm={8} md={6} lg={4}>
+          <Card className="shadow-sm">
+            <Card.Body className="text-center p-4">
+              <Card.Title className="h3 mb-3">Logga in</Card.Title>
+              <Card.Text className="text-muted mb-4">
+                Här kommer inloggningsformuläret att visas.
+              </Card.Text>
+              <Button variant="primary" as="a" href="/">
+                Till startsidan
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
