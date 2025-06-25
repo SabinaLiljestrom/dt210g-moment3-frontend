@@ -1,24 +1,55 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Container, Card, Button } from "react-bootstrap";
+import { Container, Card, Button, Spinner, Alert } from "react-bootstrap";
+import api from "../api/api";
+import { Post } from "../types/blog";
 
+/**
+ * PostDetail – hämtar ett specifikt inlägg via GET /posts/:id.
+ */
 const PostDetail: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadPost = async () => {
+      try {
+        const res = await api.get<Post>(`/posts/${id}`);
+        setPost(res.data);
+      } catch {
+        setError("Kunde inte hämta inlägget.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) loadPost();
+  }, [id]);
 
   return (
     <Container className="py-5 d-flex justify-content-center">
-      <Card style={{ maxWidth: "32rem" }} className="shadow-sm w-100">
-        <Card.Body>
-          <Card.Title className="h3 mb-3">Inläggsdetaljer</Card.Title>
-          <Card.Text className="mb-4">
-            Här kommer detaljer för inlägg <strong>{id}</strong> att laddas och
-            visas.
-          </Card.Text>
-          <Button as="a" href="/" variant="primary">
-            Till startsidan
-          </Button>
-        </Card.Body>
-      </Card>
+      {loading && <Spinner animation="border" />}
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      {!loading && !error && post && (
+        <Card style={{ maxWidth: "40rem" }} className="shadow-sm w-100">
+          <Card.Body>
+            <Card.Title className="h3 mb-3">{post.title}</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              Av {post.author?.username ?? "okänd"} –{" "}
+              {new Date(post.createdAt).toLocaleDateString()}
+            </Card.Subtitle>
+            <Card.Text className="mb-4" style={{ whiteSpace: "pre-line" }}>
+              {post.content}
+            </Card.Text>
+            <Button as="a" href="/" variant="primary">
+              Till startsidan
+            </Button>
+          </Card.Body>
+        </Card>
+      )}
     </Container>
   );
 };
