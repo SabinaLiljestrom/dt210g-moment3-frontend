@@ -1,8 +1,39 @@
-import React from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import { login } from "../api/api";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await login(username, password);
+      navigate("/admin"); // skicka till admin efter lyckad inlogg
+    } catch {
+      setError("Fel användarnamn eller lösenord.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container
       fluid
@@ -11,17 +42,55 @@ const Login: React.FC = () => {
       <Row className="w-100 justify-content-center">
         <Col xs={11} sm={8} md={6} lg={4}>
           <Card className="shadow-sm">
-            <Card.Body className="text-center p-4">
-              <Card.Title className="h3 mb-3">Logga in</Card.Title>
-              <Card.Text className="text-muted mb-4">
-                Här kommer inloggningsformuläret att visas.
-              </Card.Text>
-              <Button variant="primary" as="a" href="/">
-                Till startsidan
-              </Button>
+            <Card.Body className="p-4">
+              <h3 className="mb-3 text-center">Logga in</h3>
+
+              {error && (
+                <Alert variant="danger" className="text-center">
+                  {error}
+                </Alert>
+              )}
+
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="username">
+                  <Form.Label>Användarnamn</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4" controlId="password">
+                  <Form.Label>Lösenord</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    "Logga in"
+                  )}
+                </Button>
+              </Form>
             </Card.Body>
           </Card>
         </Col>
+        <div className="text-center mt-3">
+          <Link to="/">Till startsidan</Link>
+        </div>
       </Row>
     </Container>
   );

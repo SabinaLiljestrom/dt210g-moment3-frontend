@@ -29,12 +29,12 @@ const PostDetail: React.FC = () => {
   }, [id]);
 
   return (
-    <Container className="py-5 d-flex justify-content-center">
+    <Container className="py-5 d-flex flex-column align-items-center">
       {loading && <Spinner animation="border" />}
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && post && (
-        <Card style={{ maxWidth: "40rem" }} className="shadow-sm w-100">
+        <Card style={{ maxWidth: "40rem" }} className="shadow-sm w-100 mb-4">
           <Card.Body>
             <Card.Title className="h3 mb-3">{post.title}</Card.Title>
             <Card.Subtitle className="mb-2 text-muted">
@@ -44,12 +44,14 @@ const PostDetail: React.FC = () => {
             <Card.Text className="mb-4" style={{ whiteSpace: "pre-line" }}>
               {post.content}
             </Card.Text>
-            <Button as="a" href="/" variant="primary">
-              Till startsidan
-            </Button>
           </Card.Body>
         </Card>
       )}
+
+      {/* Länk tillbaka till startsidan */}
+      <div className="text-center mt-3">
+        <Link to="/">Till startsidan</Link>
+      </div>
     </Container>
   );
 };
