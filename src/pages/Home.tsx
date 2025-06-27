@@ -5,11 +5,6 @@ import { fetchPosts } from "../api/api";
 import { Post } from "../types/blog";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-/**
- Home – hämtar riktiga poster via GET /posts (ingen token krävs).
- Visar hero‑titel.
- Listar varje post i ett Bootstrap‑Card (vertikalt). Klickbar titel länkar till detaljer.
- */
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);

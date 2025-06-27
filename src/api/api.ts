@@ -26,9 +26,9 @@ if (existing) setToken(existing);
 
 /* ----------  AUTH-endpoint  ---------- */
 export const login = async (username: string, password: string) => {
-  const res = await api.post<{ token: string }>("/login", { username, password });
-  setToken(res.data.token);               // spara & lägg i headers
-};
+    const res = await api.post("/login", { username, password });
+    return res.data.token;
+  };  
 
 /* ----------  BLOGG-endpoints  ---------- */
 export const fetchPosts = async (): Promise<Post[]> => {

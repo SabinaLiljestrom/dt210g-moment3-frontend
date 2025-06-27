@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../api/api";
+import { useAuth } from "../contexts/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login: React.FC = () => {
@@ -18,6 +19,7 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login: authLogin } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,8 +27,8 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      await login(username, password);
-      navigate("/admin"); // skicka till admin efter lyckad inlogg
+      const token = await login(username, password); // API-login
+      authLogin(token); // Uppdatera context
     } catch {
       setError("Fel användarnamn eller lösenord.");
     } finally {
