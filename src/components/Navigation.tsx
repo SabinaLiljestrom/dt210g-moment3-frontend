@@ -4,11 +4,11 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-/**
+/***************************************************
  * Navigation 
  Inloggad: Posts, Admin, Logga ut
  Utloggad: Posts, Logga in
- */
+****************************************************/
 const Navigation: React.FC = () => {
   const { isLoggedIn, logout } = useAuth();
 
