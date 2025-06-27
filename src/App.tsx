@@ -9,6 +9,7 @@ import Header from "./components/Header";
 import PostDetail from "./pages/PostDetail";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
+import PostsPage from "./pages/PostsPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/posts" element={<PostsPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/admin" element={<PrivateRoute element={<Admin />} />} />

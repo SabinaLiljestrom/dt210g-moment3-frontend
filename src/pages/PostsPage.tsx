@@ -1,59 +1,31 @@
+// src/pages/PostsPage.tsx
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { fetchPosts } from "../api/api";
 import { Post } from "../types/blog";
-import "bootstrap/dist/css/bootstrap.min.css";
 
-const Home: React.FC = () => {
+const PostsPage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchPosts();
-        setPosts(data);
-      } catch {
-        setError("Kunde inte hämta inlägg. Försök igen senare.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    fetchPosts()
+      .then(setPosts)
+      .catch(() => setError("Kunde inte hämta inlägg."))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <Container className="py-5">
-      {/* Hero */}
-      <Row className="mb-4 text-center">
-        <Col>
-          <h1 className="display-4 fw-bold">Välkommen till Eskils Blogg</h1>
-          <p className="lead text-muted">
-            Tankar om livet i allmänhet som hund.
-          </p>
-        </Col>
-      </Row>
+      <h1 className="display-5 mb-4 text-center">Alla inlägg</h1>
 
-      {/* State‑handling */}
-      {loading && (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
-      )}
-      {error && (
-        <Alert variant="danger" className="text-center">
-          {error}
-        </Alert>
-      )}
-      {!loading && !error && posts.length === 0 && (
-        <p className="text-center text-muted">Inga inlägg ännu.</p>
-      )}
+      {loading && <Spinner animation="border" className="d-block mx-auto" />}
+      {error && <Alert variant="danger">{error}</Alert>}
 
-      {/* Lista med inlägg */}
       <Row className="g-4" xs={1} md={1}>
-        {posts.slice(0, 3).map((post) => (
+        {posts.map((post) => (
           <Col key={post._id}>
             <Card className="shadow-sm">
               <Card.Body>
@@ -79,12 +51,9 @@ const Home: React.FC = () => {
             </Card>
           </Col>
         ))}
-        <div className="text-center mt-3">
-          <Link to="/posts">Visa alla inlägg</Link>
-        </div>
       </Row>
     </Container>
   );
 };
 
-export default Home;
+export default PostsPage;
