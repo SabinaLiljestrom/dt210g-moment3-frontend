@@ -11,6 +11,7 @@ import {
 import { fetchPosts, createPost, updatePost, deletePost } from "../api/api";
 import { Post } from "../types/blog";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { error } from "console";
 
 /***************************************************
  * Admin – full CRUD‑vy (skyddad route)
@@ -168,19 +169,28 @@ const EditModal: React.FC<EditModalProps> = ({
   const [title, setTitle] = useState(post?.title ?? "");
   const [content, setContent] = useState(post?.content ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // reset när modalen öppnas för ett nytt post-objekt
   useEffect(() => {
     setTitle(post?.title ?? "");
     setContent(post?.content ?? "");
     setImageFile(null);
+    setError(null);
   }, [post]);
 
   const handleSubmit = () => {
+    if (!title.trim() || !content.trim()) {
+      setError("Både titel och innehåll måste fyllas i.");
+      return;
+    }
+
     const fd = new FormData();
     fd.append("title", title);
     fd.append("content", content);
     if (imageFile) fd.append("image", imageFile);
+
+    setError(null); // rensa fel
     onSave(fd);
   };
 
@@ -190,6 +200,7 @@ const EditModal: React.FC<EditModalProps> = ({
         <Modal.Title>{post ? "Redigera inlägg" : "Nytt inlägg"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>Titel</Form.Label>
