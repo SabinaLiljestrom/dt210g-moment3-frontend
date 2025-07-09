@@ -16,7 +16,14 @@ const Navigation: React.FC = () => {
     <Navbar bg="light" expand="sm" className="shadow-sm rounded mb-3">
       <Container>
         <Navbar.Brand as={NavLink} to="/">
-          Eskils&nbsp;Blogg
+          <img
+            src="/logo.png"
+            alt="Logo"
+            width="30"
+            height="30"
+            className="d-inline-block align-top me-2"
+          />
+          Blogg
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-nav" />
         <Navbar.Collapse id="main-nav">
