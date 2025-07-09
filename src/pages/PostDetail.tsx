@@ -36,6 +36,13 @@ const PostDetail: React.FC = () => {
       {!loading && !error && post && (
         <Card style={{ maxWidth: "40rem" }} className="shadow-sm w-100 mb-4">
           <Card.Body>
+            {post.image && (
+              <img
+                src={`http://localhost:3018${post.image}`}
+                className="d-block mx-auto mb-3 rounded img-fluid"
+                alt={post.title}
+              />
+            )}
             <Card.Title className="h3 mb-3">{post.title}</Card.Title>
             <Card.Subtitle className="mb-2 text-muted">
               Av {post.author?.username ?? "okänd"} –{" "}

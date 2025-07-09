@@ -40,15 +40,20 @@ export const fetchPostById = async (id: string): Promise<Post> => {
   return res.data;
 };
 
-export const createPost = async (data: { title: string; content: string }): Promise<Post> => {
-  const res = await api.post<Post>("/posts", data);
+export const createPost = async (data: FormData): Promise<Post> => {
+  const res = await api.post("/posts", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data;
 };
 
-export const updatePost = async (id: string, data: Partial<{ title: string; content: string }>): Promise<Post> => {
-  const res = await api.put<Post>(`/posts/${id}`, data);
+export const updatePost = async (id: string, data: FormData): Promise<Post> => {
+  const res = await api.put(`/posts/${id}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data;
 };
+
 
 export const deletePost = async (id: string) => {
   await api.delete(`/posts/${id}`);

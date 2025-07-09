@@ -52,12 +52,28 @@ const Home: React.FC = () => {
       )}
 
       {/* Lista med inlägg */}
-      <Row className="g-4" xs={1} md={1}>
+      <Row
+        xs={1}
+        md={2}
+        lg={3} // 1 kort på mobil, 2 på md, 3 på lg
+        className="g-4 justify-content-center"
+      >
         {posts.slice(0, 3).map((post) => (
-          <Col key={post._id}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <Card.Title>
+          <Col key={post._id} className="d-flex">
+            {" "}
+            {/* flex gör kortet lika högt */}
+            <Card className="shadow-sm w-100">
+              {/* Bildwrapper med fast proportion */}
+              <div className="ratio ratio-16x9">
+                <img
+                  src={`http://localhost:3018${post.image}`}
+                  className="img-fluid object-fit-cover rounded-top"
+                  alt={post.title}
+                />
+              </div>
+
+              <Card.Body className="d-flex flex-column">
+                <Card.Title className="flex-grow-0">
                   <Link
                     to={`/posts/${post._id}`}
                     className="text-decoration-none"
@@ -65,12 +81,14 @@ const Home: React.FC = () => {
                     {post.title}
                   </Link>
                 </Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">
+
+                <Card.Subtitle className="mb-2 text-muted flex-grow-0">
                   Av {post.author?.username ?? "okänd"} –{" "}
                   {new Date(post.createdAt).toLocaleDateString()}
                 </Card.Subtitle>
+
                 <Card.Text
-                  className="text-truncate"
+                  className="text-truncate flex-grow-1"
                   style={{ maxHeight: "4.5rem" }}
                 >
                   {post.content}
@@ -79,9 +97,6 @@ const Home: React.FC = () => {
             </Card>
           </Col>
         ))}
-        <div className="text-center mt-3">
-          <Link to="/posts">Visa alla inlägg</Link>
-        </div>
       </Row>
     </Container>
   );

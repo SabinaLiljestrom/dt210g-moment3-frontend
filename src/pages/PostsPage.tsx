@@ -29,6 +29,14 @@ const PostsPage: React.FC = () => {
           <Col key={post._id}>
             <Card className="shadow-sm">
               <Card.Body>
+                {post.image && (
+                  <img
+                    src={`http://localhost:3018${post.image}`}
+                    alt="thumb"
+                    width={60}
+                    className="rounded"
+                  />
+                )}
                 <Card.Title>
                   <Link
                     to={`/posts/${post._id}`}

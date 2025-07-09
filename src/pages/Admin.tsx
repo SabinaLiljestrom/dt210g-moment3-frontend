@@ -14,15 +14,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 /***************************************************
  * Admin – full CRUD‑vy (skyddad route)
- * 1. Visar tabell med alla inlägg
- * 2. Skapa, redigera, radera via Modal‑formulär
+ * 1. Visar tabell med alla inlägg (inkl. miniatyr om bild finns)
+ * 2. Skapa, redigera, radera via Modal‑formulär (multipart)
  ***************************************************/
 const Admin: React.FC = () => {
   /* ---------- state ---------- */
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [showEdit, setShowEdit] = useState(false);
   const [current, setCurrent] = useState<Post | null>(null);
 
@@ -30,7 +29,7 @@ const Admin: React.FC = () => {
   const loadPosts = () => {
     setLoading(true);
     fetchPosts()
-      .then((data) => setPosts(data))
+      .then(setPosts)
       .catch(() => setError("Kunde inte hämta inlägg"))
       .finally(() => setLoading(false));
   };
@@ -51,14 +50,14 @@ const Admin: React.FC = () => {
   };
 
   /* ---------- save (create or update) ---------- */
-  const handleSave = async (title: string, content: string) => {
+  const handleSave = async (formData: FormData) => {
     if (current) {
-      const updated = await updatePost(current._id, { title, content });
+      const updated = await updatePost(current._id, formData);
       setPosts((prev) =>
         prev.map((p) => (p._id === updated._id ? updated : p))
       );
     } else {
-      const created = await createPost({ title, content });
+      const created = await createPost(formData);
       setPosts((prev) => [created, ...prev]);
     }
     setShowEdit(false);
@@ -86,6 +85,7 @@ const Admin: React.FC = () => {
           <Table striped bordered hover responsive>
             <thead>
               <tr>
+                <th className="d-none d-sm-table-cell">Bild</th>
                 <th>Titel</th>
                 <th>Författare</th>
                 <th>Skapad</th>
@@ -95,24 +95,40 @@ const Admin: React.FC = () => {
             <tbody>
               {posts.map((post) => (
                 <tr key={post._id}>
-                  <td>{post.title}</td>
+                  <td className="d-none d-sm-table-cell" style={{ width: 80 }}>
+                    {post.image && (
+                      <img
+                        src={`http://localhost:3018${post.image}`}
+                        width={60}
+                        className="rounded"
+                        alt=""
+                      />
+                    )}
+                  </td>
+                  <td className="text-truncate" style={{ maxWidth: 110 }}>
+                    {post.title}
+                  </td>
                   <td>{post.author?.username ?? "okänd"}</td>
                   <td>{new Date(post.createdAt).toLocaleDateString()}</td>
                   <td>
                     <Button
                       size="sm"
                       variant="outline-primary"
-                      className="me-2"
+                      className="me-1 p-1"
                       onClick={() => openModal(post)}
+                      aria-label="Redigera"
                     >
-                      Redigera
+                      <i className="bi bi-pencil" />
                     </Button>
+
                     <Button
                       size="sm"
                       variant="outline-danger"
+                      className="p-1"
                       onClick={() => handleDelete(post._id)}
+                      aria-label="Radera"
                     >
-                      Radera
+                      <i className="bi bi-trash" />
                     </Button>
                   </td>
                 </tr>
@@ -139,7 +155,7 @@ const Admin: React.FC = () => {
 interface EditModalProps {
   show: boolean;
   onHide: () => void;
-  onSave: (title: string, content: string) => void;
+  onSave: (formData: FormData) => void;
   post: Post | null;
 }
 
@@ -151,12 +167,22 @@ const EditModal: React.FC<EditModalProps> = ({
 }) => {
   const [title, setTitle] = useState(post?.title ?? "");
   const [content, setContent] = useState(post?.content ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   // reset när modalen öppnas för ett nytt post-objekt
   useEffect(() => {
     setTitle(post?.title ?? "");
     setContent(post?.content ?? "");
+    setImageFile(null);
   }, [post]);
+
+  const handleSubmit = () => {
+    const fd = new FormData();
+    fd.append("title", title);
+    fd.append("content", content);
+    if (imageFile) fd.append("image", imageFile);
+    onSave(fd);
+  };
 
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -173,7 +199,7 @@ const EditModal: React.FC<EditModalProps> = ({
               required
             />
           </Form.Group>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>Innehåll</Form.Label>
             <Form.Control
               as="textarea"
@@ -183,13 +209,24 @@ const EditModal: React.FC<EditModalProps> = ({
               required
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Bild</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const target = e.target as HTMLInputElement;
+                setImageFile(target.files?.[0] || null);
+              }}
+            />
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
           Avbryt
         </Button>
-        <Button variant="primary" onClick={() => onSave(title, content)}>
+        <Button variant="primary" onClick={handleSubmit}>
           Spara
         </Button>
       </Modal.Footer>
